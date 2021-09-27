@@ -1,6 +1,6 @@
 ## Development process
 
-### Installing dependencies
+### Bootstrapping the App and Installing Dependencies
 
 Used `create-react-app` to create a running React app.
 > `npx create-react-app workday-live-search-app`
@@ -16,3 +16,9 @@ Most of these steps were done as per `create-react-app` Readme.
 Created a `.npmrc` file to disable the `package.lock` generation, as I am not interested in locking versions for my dependencies.
 
 Removed the perf measurement file as it wasn't in scope for this project.
+
+Created a new GitHub Repo for the project and pushed the initial changes.
+
+Installed `msw` to avoid mocking `fetch` for the unit/integration tests. Using a fake server on the service worked is much better for testing as it provides more confidence.
+
+> `npm install --save-dev msw`
