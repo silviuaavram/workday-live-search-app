@@ -7,6 +7,12 @@ type Data = {
       name: string;
     };
   }[];
+  included: {
+    attributes: {
+      email: string;
+    };
+    id: string;
+  }[];
 };
 
 export type Employee = {
@@ -14,6 +20,7 @@ export type Employee = {
   firstName: string;
   lastName: string;
   name: string;
+  email: string;
 };
 
 export const DATA_SOURCE =
@@ -21,12 +28,15 @@ export const DATA_SOURCE =
 
 export async function getData(): Promise<Employee[]> {
   return fetch(DATA_SOURCE).then((response) =>
-    response.json().then(({ data }: Data) =>
+    response.json().then(({ data, included }: Data) =>
       data.map((employee) => ({
         id: employee.id,
         name: employee.attributes.name,
         firstName: employee.attributes.firstName,
         lastName: employee.attributes.lastName,
+        email:
+          included.find((account) => account.id === employee.id)?.attributes
+            .email ?? "",
       }))
     )
   );
