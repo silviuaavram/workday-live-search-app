@@ -1,13 +1,36 @@
 # Peakon Live Search
 
+## Setup
+
+Clone the repository and install the dependencies:
+```bash
+git clone https://github.com/silviuaavram/workday-live-search-app.git
+cd workday-live-search-app
+npm install
+```
+
+Run the app in development mode:
+```bash
+npm run start
+```
+
+Run unit tests:
+```bash
+npm t
+```
+
 ## Bootstrapping the App and Installing Dependencies
 
 Used `create-react-app` to create a running React app.
-> `npx create-react-app workday-live-search-app`
+```bash
+npx create-react-app workday-live-search-app
+```
 
 On top, I have added `React Testing Library` for unit/integration testing, as well as `Typescript` support.
 
-> `npm install --save-dev @testing-library/react @testing-library/user-event @testing-library/dom typescript @types/node @types/react @types/react-dom @types/jest`
+```
+npm install --save-dev @testing-library/react @testing-library/user-event @testing-library/dom typescript @types/node @types/react @types/react-dom @types/jest`
+```
 
 I renamed my `js` files to `ts` and restarted the development server, in order to allow `create-react-app` bootstrap Typescript.
 
@@ -21,7 +44,9 @@ Created a new GitHub Repo for the project and pushed the initial changes.
 
 Installed `msw` to avoid mocking `fetch` for the unit/integration tests. Using a fake server on the service worked is much better for testing as it provides more confidence.
 
-> `npm install --save-dev msw`
+```
+npm install --save-dev msw
+```
 
 ## Creating the Initial UI
 
@@ -54,3 +79,10 @@ Second to last feature was actually selecting a value from the options by click 
 ## Filtering by Input Value
 
 The last feature implemented was the actual filtering of the options by the value in the input. I kept the filtered options in the `users` and filter according to the `inputValue` only when the unfiltered users or the input value change. Used `React.useMemo` for this scenario, and although in this specific case it's probably an overkill, when there are many options and the filtering logic is complicated, computing the options on every render may hurt performance.
+
+## Final Thoughts
+
+I did not spend time to dig into how to make `jest` to understand absolute paths when running tests, and chose to live with `../../test/..` and with `react-scripts`.
+There are also some scenarios I did not take into account to implement, like opening the menu with option highlighted on ArrowDown/ArrowUp from input, with menu closed, or closing the menu on Escape. This was due to the lack of time and acceptance criteria. As far as issues are concerned, I hope that whatever it is that I wanted to cover with unit tests has no bugs, but there may be bugs related to scenarios I did not consider to unit test.
+
+Overall implementation time for the project was around 11 hours.
