@@ -38,6 +38,9 @@ export const hoverOption = (index: number) => {
 export const unhoverOption = (index: number) => {
   userEvent.unhover(getOptions()[index]);
 };
+export const clickOnOption = (index: number) => {
+  userEvent.click(getOptions()[index]);
+};
 export const arrowDownOnInput = () => {
   userEvent.type(getInput(), "{arrowdown}");
 };
@@ -49,6 +52,16 @@ export const endOnInput = () => {
 };
 export const homeOnInput = () => {
   userEvent.type(getInput(), "{home}");
+};
+export const enterOnInput = () => {
+  userEvent.type(getInput(), "{enter}");
+};
+export const typeInInput = (value: string, clear = false) => {
+  if (clear) {
+    userEvent.clear(getInput())
+  }
+
+  userEvent.type(getInput(), value);
 };
 
 export async function renderApp(): Promise<RenderResult> {

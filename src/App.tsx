@@ -8,12 +8,20 @@ function App() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const [inputValue, setInputValue] = React.useState("");
-  const { data: users, errorMessage, status } = useData();
+  const { data: unfilteredUsers, errorMessage, status } = useData();
 
   // used to determine if the input was blurred after a toggle button click.
   const toggleButtonClickedRef = React.useRef(false);
+  const highlightedIndexChangeByKeyRef = React.useRef(false);
   const toggleButtonRef = React.useRef<HTMLButtonElement>();
   const inputRef = React.useRef<HTMLInputElement>();
+
+  // filter the users only when unfilter users or input change.
+  const users = React.useMemo(() => {
+    const regexp = new RegExp([...inputValue].join(".*"), "i");
+
+    return unfilteredUsers.filter((user) => regexp.test(user.name));
+  }, [unfilteredUsers, inputValue]);
 
   React.useEffect(() => {
     if (
@@ -27,6 +35,13 @@ function App() {
 
   React.useEffect(() => {
     if (isOpen && users[highlightedIndex]) {
+      // do not scroll into view if highlight comes from mouse
+      if (!highlightedIndexChangeByKeyRef.current) {
+        return;
+      } else {
+        highlightedIndexChangeByKeyRef.current = false;
+      }
+
       const element = document.getElementById(users[highlightedIndex].id);
 
       if (element) {
@@ -70,10 +85,23 @@ function App() {
 
   function handleInputKeyDown(event: React.KeyboardEvent) {
     if (["ArrowDown", "ArrowUp", "End", "Home"].indexOf(event.key) > -1) {
+      highlightedIndexChangeByKeyRef.current = true;
       setHighlightedIndex(
         getNextIndex(highlightedIndex, users.length, event.key)
       );
     }
+
+    if (event.key === "Enter") {
+      setInputValue(users[highlightedIndex].name);
+      setHighlightedIndex(-1);
+      setIsOpen(false);
+    }
+  }
+
+  function handleItemClick(index: number) {
+    setInputValue(users[index].name);
+    setHighlightedIndex(-1);
+    setIsOpen(false);
   }
 
   return (
@@ -129,6 +157,7 @@ function App() {
                 className={
                   index === highlightedIndex ? "active-option" : undefined
                 }
+                onClick={() => handleItemClick(index)}
               >
                 <div>{user.name}</div>
                 <div>{user.email || "--"}</div>

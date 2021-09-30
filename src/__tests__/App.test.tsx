@@ -19,6 +19,9 @@ import {
   arrowUpOnInput,
   homeOnInput,
   endOnInput,
+  clickOnOption,
+  enterOnInput,
+  typeInInput,
 } from "../../test/test-utils";
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
@@ -175,3 +178,33 @@ test("options should become active depending on the key pressed", async () => {
 
   expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalledTimes(7);
 });
+
+test('should select an option by click', async () => {
+  const itemIndex = 1
+  await renderApp()
+
+  focusInput()
+  clickOnOption(itemIndex)
+
+  expect(getInput()).toHaveValue(data.data[itemIndex].attributes.name)
+})
+
+test('should select an option by hitting enter with the option highlighted', async () => {
+  const itemIndex = 1
+  await renderApp()
+
+  focusInput()
+  hoverOption(itemIndex)
+  enterOnInput()
+
+  expect(getInput()).toHaveValue(data.data[itemIndex].attributes.name)
+})
+
+test('should filter the options by input value', async () => {
+  await renderApp()
+  
+  focusInput()
+  typeInInput('tMc')
+
+  expect(getOptions()).toHaveLength(1)
+})

@@ -46,4 +46,11 @@ I was forced to use the `toggleButtonClickedRef` because without it, with input 
 
 ## Highlighting the Options
 
-The next feature developed was showing and scrolling into view the options that were highlighted with either the mouse or by keyboard up/down and home/end. Using the `highlightedIndex` state value I applied a class to the highlighted option, as well as changed the `aria-selected` and `aria-activedescendant` values in the combobox.
+The next feature developed was showing and scrolling into view the options that were highlighted with either the mouse or by keyboard up/down and home/end. Using the `highlightedIndex` state value I applied a class to the highlighted option, as well as changed the `aria-selected` and `aria-activedescendant` values in the combobox. I used `scrollIntoView` to scroll the options into view, only if the highlight change comes from keyboard. If I highlight by mouse, I do not scroll, and used another `ref` related logic to implement this use case. There are better libraries out there that scroll way better than my implementation, but for this assignment I did not want to use any, and I think that by covering this use case, the widget performs well enough.
+## Selecting from Options
+
+Second to last feature was actually selecting a value from the options by click or by hitting Enter with the option highlighted. As a consequence of the selection, the input value became the `name` of the selected user.
+
+## Filtering by Input Value
+
+The last feature implemented was the actual filtering of the options by the value in the input. I kept the filtered options in the `users` and filter according to the `inputValue` only when the unfiltered users or the input value change. Used `React.useMemo` for this scenario, and although in this specific case it's probably an overkill, when there are many options and the filtering logic is complicated, computing the options on every render may hurt performance.
