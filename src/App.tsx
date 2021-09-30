@@ -2,6 +2,7 @@ import * as React from "react";
 import "./App.css";
 import { Employee, useData } from "./data.utils";
 import { Status } from "./App.types";
+import { getNextIndex } from "./App.utils";
 
 function App() {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -23,6 +24,16 @@ function App() {
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  React.useEffect(() => {
+    if (isOpen && users[highlightedIndex]) {
+      const element = document.getElementById(users[highlightedIndex].id);
+
+      if (element) {
+        element.scrollIntoView(false);
+      }
+    }
+  }, [highlightedIndex, users, isOpen]);
 
   if (status === Status.Loading) {
     return <div role="alert">Loading ...</div>;
@@ -47,9 +58,21 @@ function App() {
 
   function handleInputBlur() {
     if (toggleButtonClickedRef.current) {
-      toggleButtonClickedRef.current = false
+      toggleButtonClickedRef.current = false;
     } else {
       setIsOpen(false);
+    }
+  }
+
+  function handleOptionMouseOver(index: number) {
+    setHighlightedIndex(index);
+  }
+
+  function handleInputKeyDown(event: React.KeyboardEvent) {
+    if (["ArrowDown", "ArrowUp", "End", "Home"].indexOf(event.key) > -1) {
+      setHighlightedIndex(
+        getNextIndex(highlightedIndex, users.length, event.key)
+      );
     }
   }
 
@@ -58,6 +81,8 @@ function App() {
       <label htmlFor="search-box">Manager</label>
       <div className="search-wrapper">
         <input
+          type="text"
+          autoComplete="off"
           role="combobox"
           aria-autocomplete="list"
           aria-controls="suggestions-list"
@@ -68,6 +93,7 @@ function App() {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
+          onKeyDown={handleInputKeyDown}
           ref={inputRef}
         />
         <button
@@ -99,9 +125,13 @@ function App() {
                 id={user.id}
                 role="option"
                 aria-selected={index === highlightedIndex}
+                onMouseEnter={() => handleOptionMouseOver(index)}
+                className={
+                  index === highlightedIndex ? "active-option" : undefined
+                }
               >
                 <div>{user.name}</div>
-                <div>{user.email || '--'}</div>
+                <div>{user.email || "--"}</div>
               </li>
             ))
           : null}

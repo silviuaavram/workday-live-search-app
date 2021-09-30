@@ -43,3 +43,7 @@ I also created a unit test in case the options fetch failed, so we will display 
 After creating the initial UI I decided to handle the dropdown list show/hide part. I began by writing the unit test to show the list on input focus, and fixed the test by implementing the functionality. Next was closing the menu on input blur. Futhermore, I continued with the toggle button click, which should open and close the list. I also focused the input after the button click that opened the menu, for accessibility and usability reasons.
 
 I was forced to use the `toggleButtonClickedRef` because without it, with input focused and menu opened, clicking the toggle button would blur the input, close the menu (as a result of input blur), then the click handler that changed the state to `!isOpen` would think that it has to open the menu, which resulted in opening the menu immediately after close. The `ref` logic introduced helped me tackle this specific use case.
+
+## Highlighting the Options
+
+The next feature developed was showing and scrolling into view the options that were highlighted with either the mouse or by keyboard up/down and home/end. Using the `highlightedIndex` state value I applied a class to the highlighted option, as well as changed the `aria-selected` and `aria-activedescendant` values in the combobox.

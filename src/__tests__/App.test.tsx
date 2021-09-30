@@ -1,5 +1,5 @@
 import { DATA_SOURCE } from "src/data.utils";
-import { dataCount } from "../../test/test-data";
+import { dataCount, data } from "../../test/test-data";
 import { server, rest } from "../../test/server";
 import {
   renderApp,
@@ -13,7 +13,15 @@ import {
   waitFor,
   blurInput,
   getOptions,
+  hoverOption,
+  getOption,
+  arrowDownOnInput,
+  arrowUpOnInput,
+  homeOnInput,
+  endOnInput,
 } from "../../test/test-utils";
+
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 test("shows loading text, then search input, toggle button and empty results list", async () => {
   const renderPromise = renderApp();
@@ -32,10 +40,12 @@ test("shows loading text, then search input, toggle button and empty results lis
 
   expect(input).toHaveAttribute("role", "combobox");
   expect(input).toHaveAttribute("aria-controls", "suggestions-list");
-  expect(input).toHaveAttribute("aria-activedescendant");
+  expect(input).toHaveAttribute("aria-activedescendant", "");
   expect(input).toHaveAttribute("aria-controls", "suggestions-list");
   expect(input).toHaveAttribute("aria-expanded", "false");
   expect(input).toHaveAttribute("id", "search-box");
+  expect(input).toHaveAttribute("aria-autocomplete", "list");
+  expect(input).toHaveAttribute("autocomplete", "off");
 
   expect(toggleButoon).toHaveAttribute("type", "button");
   expect(toggleButoon).toHaveAttribute("aria-expanded", "false");
@@ -66,6 +76,9 @@ test("shows the options on input focus", async () => {
   focusInput();
 
   expect(getOptions()).toHaveLength(dataCount);
+  expect(getInput()).toHaveAttribute("aria-expanded", "true");
+  expect(getToggleButton()).toHaveAttribute("aria-expanded", "true");
+  expect(getToggleButton()).toHaveAttribute("aria-label", "hide results");
 });
 
 test("hides the options on input blur", async () => {
@@ -90,4 +103,75 @@ test("button should toggle the open state of the list and focus the input on ope
   expect(getOptions()).toHaveLength(0);
   expect(getInput()).not.toHaveFocus();
   expect(getToggleButton()).toHaveFocus();
+});
+
+test("option hovered by mouse should become active", async () => {
+  const highlightedIndex = 1;
+  await renderApp();
+
+  focusInput();
+  hoverOption(highlightedIndex);
+
+  expect(getOption(highlightedIndex)).toHaveAttribute("aria-selected", "true");
+  expect(getInput()).toHaveAttribute(
+    "aria-activedescendant",
+    data.data[highlightedIndex].id
+  );
+});
+
+test("options should become active depending on the key pressed", async () => {
+  await renderApp();
+
+  focusInput();
+  arrowDownOnInput();
+
+  expect(getOption(0)).toHaveAttribute("aria-selected", "true");
+  expect(getInput()).toHaveAttribute("aria-activedescendant", data.data[0].id);
+
+  arrowDownOnInput();
+
+  expect(getOption(1)).toHaveAttribute("aria-selected", "true");
+  expect(getOption(0)).toHaveAttribute("aria-selected", "false");
+  expect(getInput()).toHaveAttribute("aria-activedescendant", data.data[1].id);
+
+  arrowUpOnInput();
+
+  expect(getOption(0)).toHaveAttribute("aria-selected", "true");
+  expect(getOption(1)).toHaveAttribute("aria-selected", "false");
+  expect(getInput()).toHaveAttribute("aria-activedescendant", data.data[0].id);
+
+  arrowUpOnInput();
+
+  expect(getOption(dataCount - 1)).toHaveAttribute("aria-selected", "true");
+  expect(getOption(0)).toHaveAttribute("aria-selected", "false");
+  expect(getInput()).toHaveAttribute(
+    "aria-activedescendant",
+    data.data[dataCount - 1].id
+  );
+
+  arrowUpOnInput();
+
+  expect(getOption(dataCount - 2)).toHaveAttribute("aria-selected", "true");
+  expect(getOption(dataCount - 1)).toHaveAttribute("aria-selected", "false");
+  expect(getInput()).toHaveAttribute(
+    "aria-activedescendant",
+    data.data[dataCount - 2].id
+  );
+
+  homeOnInput();
+
+  expect(getOption(0)).toHaveAttribute("aria-selected", "true");
+  expect(getOption(dataCount - 2)).toHaveAttribute("aria-selected", "false");
+  expect(getInput()).toHaveAttribute("aria-activedescendant", data.data[0].id);
+
+  endOnInput();
+
+  expect(getOption(dataCount - 1)).toHaveAttribute("aria-selected", "true");
+  expect(getOption(0)).toHaveAttribute("aria-selected", "false");
+  expect(getInput()).toHaveAttribute(
+    "aria-activedescendant",
+    data.data[dataCount - 1].id
+  );
+
+  expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalledTimes(7);
 });

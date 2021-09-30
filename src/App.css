@@ -44,3 +44,7 @@ li {
   border: 1px solid rgb(118, 118, 118);
   overflow-x: hidden;
 }
+
+.active-option {
+  background-color: lightpink;
+}

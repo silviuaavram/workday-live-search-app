@@ -16,6 +16,7 @@ export const getList = () =>
 export const getToggleButton = () =>
   screen.queryByRole("button", { name: /show|hide results/ });
 export const getOptions = () => screen.queryAllByRole("option");
+export const getOption = (index: number) => getOptions()[index];
 export const getLoadingMessage = () =>
   screen.queryByText("Loading ...", { selector: "[role=alert]" });
 export const getErrorMessage = (message: string) =>
@@ -30,6 +31,24 @@ export const blurInput = () => {
 };
 export const clickOnToggleButton = () => {
   userEvent.click(getToggleButton());
+};
+export const hoverOption = (index: number) => {
+  userEvent.hover(getOptions()[index]);
+};
+export const unhoverOption = (index: number) => {
+  userEvent.unhover(getOptions()[index]);
+};
+export const arrowDownOnInput = () => {
+  userEvent.type(getInput(), "{arrowdown}");
+};
+export const arrowUpOnInput = () => {
+  userEvent.type(getInput(), "{arrowup}");
+};
+export const endOnInput = () => {
+  userEvent.type(getInput(), "{end}");
+};
+export const homeOnInput = () => {
+  userEvent.type(getInput(), "{home}");
 };
 
 export async function renderApp(): Promise<RenderResult> {
