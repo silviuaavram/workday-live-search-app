@@ -9,6 +9,21 @@ function App() {
   const [inputValue, setInputValue] = React.useState("");
   const { data: users, errorMessage, status } = useData();
 
+  // used to determine if the input was blurred after a toggle button click.
+  const toggleButtonClickedRef = React.useRef(false);
+  const toggleButtonRef = React.useRef<HTMLButtonElement>();
+  const inputRef = React.useRef<HTMLInputElement>();
+
+  React.useEffect(() => {
+    if (
+      isOpen &&
+      toggleButtonRef.current === document.activeElement &&
+      inputRef.current
+    ) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
   if (status === Status.Loading) {
     return <div role="alert">Loading ...</div>;
   }
@@ -21,10 +36,21 @@ function App() {
     setInputValue(event.target.value);
   }
 
-  function handleToggleButtonClick() {}
+  function handleToggleButtonClick() {
+    toggleButtonClickedRef.current = true;
+    setIsOpen(!isOpen);
+  }
 
   function handleInputFocus() {
     setIsOpen(true);
+  }
+
+  function handleInputBlur() {
+    if (toggleButtonClickedRef.current) {
+      toggleButtonClickedRef.current = false
+    } else {
+      setIsOpen(false);
+    }
   }
 
   return (
@@ -41,6 +67,8 @@ function App() {
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
+          ref={inputRef}
         />
         <button
           type="button"
@@ -48,6 +76,8 @@ function App() {
           tabIndex={-1}
           aria-expanded={isOpen}
           aria-label={`${isOpen ? "hide" : "show"} results`}
+          onClick={handleToggleButtonClick}
+          ref={toggleButtonRef}
         >
           <svg
             className={isOpen ? "toggle-icon-rotated" : undefined}
@@ -69,7 +99,10 @@ function App() {
                 id={user.id}
                 role="option"
                 aria-selected={index === highlightedIndex}
-              ></li>
+              >
+                <div>{user.name}</div>
+                <div>{user.email || '--'}</div>
+              </li>
             ))
           : null}
       </ul>

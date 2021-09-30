@@ -707,3 +707,5 @@ export const data = {
     last: "http://localhost:3000/v1/employees/contexts/company_5?per_page=25&page=1&q=harriet&sort=score&order=desc&include=account%2Cphones%2CLast%20Year%20Bonus%2CBusiness%20Unit%2CCommute%20Time%2CManager&simple=false",
   },
 };
+
+export const dataCount = data.data.length

@@ -13,7 +13,7 @@ button {
 
 input {
   height: 18px;
-  width: 168px;
+  width: 170px;
 }
 
 .search-wrapper {
@@ -27,4 +27,20 @@ label {
 
 .toggle-icon-rotated {
   transform: rotate(180deg);
+}
+
+ul {
+  width: 200px;
+  height: 76px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: scroll;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+li {
+  border: 1px solid rgb(118, 118, 118);
+  overflow-x: hidden;
 }

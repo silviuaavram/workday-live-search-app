@@ -1,4 +1,5 @@
 import { DATA_SOURCE } from "src/data.utils";
+import { dataCount } from "../../test/test-data";
 import { server, rest } from "../../test/server";
 import {
   renderApp,
@@ -8,6 +9,10 @@ import {
   getLoadingMessage,
   getErrorMessage,
   focusInput,
+  clickOnToggleButton,
+  waitFor,
+  blurInput,
+  getOptions,
 } from "../../test/test-utils";
 
 test("shows loading text, then search input, toggle button and empty results list", async () => {
@@ -55,10 +60,34 @@ test("shows an error message if the options fetching was not performed", async (
   expect(getErrorMessage(testErrorMessage)).toBeInTheDocument();
 });
 
-test("shows the options list on input focus", async () => {
-  await renderApp()
+test("shows the options on input focus", async () => {
+  await renderApp();
 
-  focusInput()
+  focusInput();
 
-  expect(getList().childElementCount).toBeGreaterThan(0)
+  expect(getOptions()).toHaveLength(dataCount);
+});
+
+test("hides the options on input blur", async () => {
+  await renderApp();
+
+  focusInput();
+  blurInput();
+
+  expect(getOptions()).toHaveLength(0);
+});
+
+test("button should toggle the open state of the list and focus the input on open", async () => {
+  await renderApp();
+
+  clickOnToggleButton();
+
+  expect(getOptions()).toHaveLength(dataCount);
+  await waitFor(() => expect(getInput()).toHaveFocus());
+
+  clickOnToggleButton();
+
+  expect(getOptions()).toHaveLength(0);
+  expect(getInput()).not.toHaveFocus();
+  expect(getToggleButton()).toHaveFocus();
 });
