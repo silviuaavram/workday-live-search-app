@@ -17,7 +17,7 @@ type Data = {
   }[];
 };
 
-enum Status {
+export enum Status {
   Idle,
   Loading,
   Error,
@@ -28,6 +28,10 @@ type UseDataResult = {
   data: Employee[];
   errorMessage: string;
   status: Status;
+  isLoading: boolean;
+  isIdle: boolean;
+  isSuccess: boolean;
+  isError: boolean;
 };
 
 export type Employee = {
@@ -78,5 +82,9 @@ export function useData(): UseDataResult {
     data,
     errorMessage,
     status,
+    isLoading: status === Status.Loading,
+    isSuccess: status === Status.Success,
+    isError: status === Status.Error,
+    isIdle: status === Status.Idle,
   };
 }

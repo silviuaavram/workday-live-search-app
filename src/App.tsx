@@ -1,14 +1,13 @@
 import * as React from "react";
 import "./App.css";
-import { Employee, useData } from "./data.utils";
-import { Status } from "./App.types";
+import { useData } from "./data.utils";
 import { getNextIndex } from "./App.utils";
 
 function App() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const [inputValue, setInputValue] = React.useState("");
-  const { data: unfilteredUsers, errorMessage, status } = useData();
+  const { data: unfilteredUsers, errorMessage, isError, isLoading } = useData();
 
   // used to determine if the input was blurred after a toggle button click.
   const toggleButtonClickedRef = React.useRef(false);
@@ -50,11 +49,11 @@ function App() {
     }
   }, [highlightedIndex, users, isOpen]);
 
-  if (status === Status.Loading) {
+  if (isLoading) {
     return <div role="alert">Loading ...</div>;
   }
 
-  if (status === Status.Error) {
+  if (isError) {
     return <div role="alert">Error retrieving the users: {errorMessage}</div>;
   }
 
@@ -147,7 +146,7 @@ function App() {
       </div>
       <ul id="suggestions-list" role="listbox" aria-label="suggestions list">
         {isOpen
-          ? users.map((user: Employee, index: number) => (
+          ? users.map((user, index) => (
               <li
                 key={user.id}
                 id={user.id}
