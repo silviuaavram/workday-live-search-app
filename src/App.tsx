@@ -1,42 +1,36 @@
 import * as React from "react";
 import "./App.css";
-import { Employee, getData } from "./data.utils";
+import { Employee, useData } from "./data.utils";
 import { Status } from "./App.types";
 
 function App() {
-  const [users, setUsers] = React.useState<Employee[]>([]);
-  const [status, setStatus] = React.useState<Status>(Status.Loading);
   const [isOpen, setIsOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const [inputValue, setInputValue] = React.useState("");
-
-  React.useEffect(() => {
-    getData()
-      .then((data) => {
-        setUsers(data);
-        setStatus(Status.Idle);
-      })
-      .catch(() => {
-        setStatus(Status.Error);
-      });
-  }, []);
+  const { data: users, errorMessage, status } = useData();
 
   if (status === Status.Loading) {
     return <div role="alert">Loading ...</div>;
   }
 
   if (status === Status.Error) {
-    return <div role="alert">Error retrieving the users.</div>;
+    return <div role="alert">Error retrieving the users: {errorMessage}</div>;
   }
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(event.target.value);
   }
 
+  function handleToggleButtonClick() {}
+
+  function handleInputFocus() {
+    setIsOpen(true);
+  }
+
   return (
-    <div>
+    <div className="app-container">
       <label htmlFor="search-box">Manager</label>
-      <div>
+      <div className="search-wrapper">
         <input
           role="combobox"
           aria-autocomplete="list"
@@ -46,6 +40,7 @@ function App() {
           id="search-box"
           value={inputValue}
           onChange={handleInputChange}
+          onFocus={handleInputFocus}
         />
         <button
           type="button"
@@ -53,23 +48,31 @@ function App() {
           tabIndex={-1}
           aria-expanded={isOpen}
           aria-label={`${isOpen ? "hide" : "show"} results`}
-        ></button>
+        >
+          <svg
+            className={isOpen ? "toggle-icon-rotated" : undefined}
+            width="18"
+            height="16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <polygon points="1,4 17,4 9,15"></polygon>
+            <polygon points="3,5 15,5 9,13"></polygon>
+          </svg>
+        </button>
       </div>
-      <ul
-        id="suggestions-list"
-        role="listbox"
-        aria-label="suggestions list"
-      ></ul>
-      {isOpen
-        ? users.map((user: Employee, index: number) => (
-            <li
-              key={user.id}
-              id={user.id}
-              role="option"
-              aria-selected={index === highlightedIndex}
-            ></li>
-          ))
-        : null}
+      <ul id="suggestions-list" role="listbox" aria-label="suggestions list">
+        {isOpen
+          ? users.map((user: Employee, index: number) => (
+              <li
+                key={user.id}
+                id={user.id}
+                role="option"
+                aria-selected={index === highlightedIndex}
+              ></li>
+            ))
+          : null}
+      </ul>
     </div>
   );
 }
